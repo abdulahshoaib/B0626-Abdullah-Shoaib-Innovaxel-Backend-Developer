@@ -6,7 +6,7 @@ export function registerToEventService(param, data) {
 
   //check if user_name is provided
   if (!user_name) {
-    const error = new Error("user_name is required for registeration");
+    const error = new Error("user_name is required for registration");
     error.statusCode = 400;
     throw error;
   }
@@ -30,7 +30,7 @@ export function registerToEventService(param, data) {
     throw error;
   }
 
-  // check if registeration is possible for the event
+  // check if registration is possible for the event
   sql = `SELECT COUNT(*) as registered_count FROM registrations WHERE event_id = ? AND status = 'active'`;
   const { registered_count } = db.prepare(sql).get(eventID);
 
@@ -66,4 +66,41 @@ export function registerToEventService(param, data) {
   const register = db.prepare(sql).get(result.lastInsertRowid);
 
   return register;
+}
+
+export function cancelRegistrationService(param) {
+  const regID = param;
+
+  let sql = `SELECT reg_id, event_id, user_name, status, registered_at, cancelled_at
+      FROM registrations WHERE reg_id = ?`;
+  const registration = db.prepare(sql).get(regID);
+
+  // check if registration exists
+  if (!registration) {
+    const error = new Error("Registration not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  // check if registration is already cancelled
+  if (registration.status === "cancelled") {
+    const error = new Error("Registration is already cancelled");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  sql = `
+    UPDATE registrations
+    SET status = 'cancelled',
+        cancelled_at = CURRENT_TIMESTAMP
+    WHERE reg_id = ?
+  `;
+  db.prepare(sql).run(regID);
+
+  // return updated registration
+  sql = `SELECT reg_id, event_id, user_name, status, registered_at, cancelled_at
+      FROM registrations WHERE reg_id = ?`;
+  const cancel = db.prepare(sql).get(regID);
+
+  return cancel;
 }

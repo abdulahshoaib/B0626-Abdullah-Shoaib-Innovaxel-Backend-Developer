@@ -1,6 +1,7 @@
 import express from "express";
 import db from "./db/database.js";
 import eventRoutes from "./routes/event.routes.js";
+import registerRoutes from "./routes/register.routes.js";
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.get("/health", (_, res) => {
 });
 
 app.use("/events", eventRoutes);
+app.use("/events/reg", registerRoutes);
 
 export default app;
