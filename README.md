@@ -23,7 +23,7 @@ create new event
     "success": true,
     "message": "Event created successfully",
     "data": {
-        "id": 1,
+        "event_id": 1,
         "name": "Tech Conference",
         "total_seats": 100,
         "event_date": "2026-12-20T10:00:00.000Z"
