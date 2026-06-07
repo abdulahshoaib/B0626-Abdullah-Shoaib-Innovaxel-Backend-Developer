@@ -1,12 +1,12 @@
 # Event Registration System API
 
-# 1. Create Event
+## 1. Create Event
 
-## POST /events
+### POST /events
 
-create new event
+Create a new event.
 
-### Request body
+#### Request Body
 
 ```json
 {
@@ -16,28 +16,28 @@ create new event
 }
 ```
 
-### Success Response
+#### Success Response
 
 ```json
 {
-    "success": true,
-    "message": "Event created successfully",
-    "data": {
-        "event_id": 1,
-        "name": "Tech Conference",
-        "total_seats": 100,
-        "event_date": "2026-12-20T10:00:00.000Z"
-        "created_at": "2026-06-07 10:30:00"
-    }
+  "success": true,
+  "message": "Event created Successfully",
+  "data": {
+    "event_id": 1,
+    "name": "Tech Conference",
+    "total_seats": 100,
+    "event_date": "2026-12-20T10:00:00.000Z",
+    "created_at": "2026-06-07 10:30:00"
+  }
 }
 ```
 
-### Error Response
+#### Error Responses
 
 ```json
 {
   "success": false,
-  "message": "Event name is required"
+  "message": "Event Name is required"
 }
 ```
 
@@ -45,6 +45,20 @@ create new event
 {
   "success": false,
   "message": "Total seats must be greater than 0"
+}
+```
+
+```json
+{
+  "success": false,
+  "message": "Event date is required"
+}
+```
+
+```json
+{
+  "success": false,
+  "message": "Invalid event date"
 }
 ```
 
@@ -62,17 +76,17 @@ create new event
 }
 ```
 
-# 2. Register User to Event
+## 2. Register User To Event
 
-## POST /events/:eventID/register
+### POST /events/reg/:event_id
 
-register user for an event
+Register a user for an event.
 
-> ```http
-> POST /events/1/register
-> ```
+```http
+POST /events/reg/1
+```
 
-### Request Body
+#### Request Body
 
 ```json
 {
@@ -80,7 +94,7 @@ register user for an event
 }
 ```
 
-### Success Response
+#### Success Response
 
 ```json
 {
@@ -97,33 +111,33 @@ register user for an event
 }
 ```
 
-### Error Response
+#### Error Responses
 
 ```json
 {
   "success": false,
-  "message": "User name is required"
+  "message": "user_name is required for registration"
 }
 ```
 
 ```json
 {
   "success": false,
-  "message": "Username should not have spaces"
+  "message": "user_name can only contain letters, numbers, and underscores"
 }
 ```
 
 ```json
 {
   "success": false,
-  "message": "Event not found"
+  "message": "event_id is Invalid"
 }
 ```
 
 ```json
 {
   "success": false,
-  "message": "Event is full"
+  "message": "Event is fully booked"
 }
 ```
 
@@ -134,13 +148,13 @@ register user for an event
 }
 ```
 
-# 3. View Events
+## 3. View Events
 
-## GET /events
+### GET /events
 
-returns all events with available seats and total registerations.
+Return all events with active registration counts and available seats.
 
-### Query Params
+#### Query Params
 
 ```http
 GET /events?sort=date
@@ -148,7 +162,7 @@ GET /events?upcoming=true
 GET /events?sort=date&upcoming=true
 ```
 
-### Success Response
+#### Success Response
 
 ```json
 {
@@ -168,17 +182,17 @@ GET /events?sort=date&upcoming=true
 }
 ```
 
-# 4. Cancel Registration
+## 4. Cancel Registration
 
-## DELETE /register/:regID
+### DELETE /events/reg/:reg_id
 
-cancel an active registeration
+Cancel an active registration.
 
-> ```http
-> DELETE /register/1
-> ```
+```http
+DELETE /events/reg/1
+```
 
-### Success Response
+#### Success Response
 
 ```json
 {
@@ -195,7 +209,7 @@ cancel an active registeration
 }
 ```
 
-### Error Response
+#### Error Responses
 
 ```json
 {
