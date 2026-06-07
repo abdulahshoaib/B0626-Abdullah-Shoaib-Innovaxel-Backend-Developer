@@ -1,5 +1,6 @@
 import express from "express";
 import db from "./db/database.js";
+import eventRoutes from "./routes/event.routes.js";
 
 const app = express();
 
@@ -14,5 +15,7 @@ app.get("/health", (_, res) => {
     database: result.ok === 1 ? "connected" : "error",
   });
 });
+
+app.use("/events", eventRoutes);
 
 export default app;
