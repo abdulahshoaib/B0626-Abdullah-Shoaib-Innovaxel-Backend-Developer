@@ -1,8 +1,34 @@
 # Event Registration System API
 
+To check all constraints run
+
+```bash
+npm test
+```
+
+To run the API server
+
+```bash
+npm start
+```
+
+To run the TUI client
+
+```bash
+npm run tui
+```
+
+## Health check
+
+```http
+GET /health
+```
+
 ## 1. Create Event
 
-### POST /events
+```http
+POST /events
+```
 
 Create a new event.
 
@@ -78,7 +104,9 @@ Create a new event.
 
 ## 2. Register User To Event
 
-### POST /events/reg/:event_id
+```http
+POST /events/reg/:event_id
+```
 
 Register a user for an event.
 
@@ -150,7 +178,9 @@ POST /events/reg/1
 
 ## 3. View Events
 
-### GET /events
+```http
+GET /events
+```
 
 Return all events with active registration counts and available seats.
 
@@ -184,7 +214,9 @@ GET /events?sort=date&upcoming=true
 
 ## 4. Cancel Registration
 
-### DELETE /events/reg/:reg_id
+```http
+DELETE /events/reg/:reg_id
+```
 
 Cancel an active registration.
 
