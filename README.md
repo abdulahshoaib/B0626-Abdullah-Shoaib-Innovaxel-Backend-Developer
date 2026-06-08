@@ -224,3 +224,23 @@ DELETE /events/reg/1
   "message": "Registration is already cancelled"
 }
 ```
+
+## Terminal UI
+
+Start the API server in one terminal:
+
+```bash
+npm start
+```
+
+Run the TUI client in another terminal:
+
+```bash
+npm run tui
+```
+
+By default, the TUI connects to `http://localhost:1234`. To use another API URL:
+
+```bash
+API_URL=http://localhost:1234 npm run tui
+```
