@@ -32,6 +32,10 @@ try {
 
     CREATE INDEX IF NOT EXISTS idx_registrations_event_id
     ON registrations(event_id);
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_active_registration_user_event
+    ON registrations(event_id, user_name)
+    WHERE status = 'active';
     `);
 } catch (error) {
   throw new Error("Error initializing database: " + error.message);

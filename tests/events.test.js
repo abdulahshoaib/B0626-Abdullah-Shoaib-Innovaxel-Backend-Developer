@@ -219,6 +219,16 @@ describe("Event Registration System API", () => {
       expect(created).toHaveLength(1);
       expect(rejected).toHaveLength(1);
       expect(rejected[0].body.message).toBe("Event is fully booked");
+
+      const { active_count } = db
+        .prepare(
+          `SELECT COUNT(*) AS active_count
+           FROM registrations
+           WHERE event_id = ?
+             AND status = 'active'`,
+        )
+        .get(eventId);
+      expect(active_count).toBe(1);
     });
   });
 

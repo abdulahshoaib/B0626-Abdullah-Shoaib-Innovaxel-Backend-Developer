@@ -1,36 +1,18 @@
 import db from "../db/database.js";
 
-export function registerToEventService(param, data) {
-  const eventID = param;
-  const { user_name } = data;
+function createServiceError(message, statusCode) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+}
 
-  //check if user_name is provided
-  if (!user_name) {
-    const error = new Error("user_name is required for registration");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  //check if user_name is valid
-  const valid_username = /^[a-zA-Z0-9_]+$/.test(user_name);
-  if (!valid_username) {
-    const error = new Error(
-      "user_name can only contain letters, numbers, and underscores",
-    );
-    error.statusCode = 400;
-    throw error;
-  }
-
-  //check if event exists
+const registerTransaction = db.transaction((eventID, userName) => {
   let sql = `SELECT 1 FROM events WHERE event_id = ?`;
   const eventExists = db.prepare(sql).get(eventID);
   if (!eventExists) {
-    const error = new Error("event_id is Invalid");
-    error.statusCode = 400;
-    throw error;
+    throw createServiceError("event_id is Invalid", 400);
   }
 
-  // check if registration is possible for the event
   sql = `SELECT COUNT(*) as registered_count FROM registrations WHERE event_id = ? AND status = 'active'`;
   const { registered_count } = db.prepare(sql).get(eventID);
 
@@ -38,12 +20,9 @@ export function registerToEventService(param, data) {
   const { total_seats } = db.prepare(sql).get(eventID);
 
   if (registered_count >= total_seats) {
-    const error = new Error("Event is fully booked");
-    error.statusCode = 400;
-    throw error;
+    throw createServiceError("Event is fully booked", 400);
   }
 
-  //check if user is already registered for the event
   sql = `
     SELECT 1
     FROM registrations
@@ -51,21 +30,39 @@ export function registerToEventService(param, data) {
       AND event_id = ?
       AND status = 'active'
   `;
-  const usernameExists = db.prepare(sql).get(user_name, eventID);
+  const usernameExists = db.prepare(sql).get(userName, eventID);
   if (usernameExists) {
-    const error = new Error("User is already registered for this event");
-    error.statusCode = 400;
-    throw error;
+    throw createServiceError("User is already registered for this event", 400);
   }
 
   sql = `INSERT INTO registrations (user_name, event_id) VALUES (?, ?)`;
-  const result = db.prepare(sql).run(user_name, eventID);
+  const result = db.prepare(sql).run(userName, eventID);
 
   sql = `SELECT reg_id, event_id, user_name, status, registered_at, cancelled_at
       FROM registrations WHERE reg_id = ?`;
-  const register = db.prepare(sql).get(result.lastInsertRowid);
 
-  return register;
+  return db.prepare(sql).get(result.lastInsertRowid);
+});
+
+export function registerToEventService(param, data) {
+  const eventID = param;
+  const { user_name } = data;
+
+  //check if user_name is provided
+  if (!user_name) {
+    throw createServiceError("user_name is required for registration", 400);
+  }
+
+  //check if user_name is valid
+  const valid_username = /^[a-zA-Z0-9_]+$/.test(user_name);
+  if (!valid_username) {
+    throw createServiceError(
+      "user_name can only contain letters, numbers, and underscores",
+      400,
+    );
+  }
+
+  return registerTransaction.immediate(eventID, user_name);
 }
 
 export function cancelRegistrationService(param) {
